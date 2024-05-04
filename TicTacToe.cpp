@@ -1,4 +1,5 @@
 #include<iostream>
+#include<cstdlib> //for srand() and rand()
 using namespace std;
 
 int winner(char combination[9], char turn)
@@ -14,7 +15,6 @@ int winner(char combination[9], char turn)
     {
         return 1;
     }
-
     return 0;
 }
 
@@ -24,7 +24,6 @@ void fill_space(int location,int &space_left, char &turn,char combination[9])
     if(combination[location]!='X' && combination[location]!='O')
     {
         combination[location]=turn;
-        turn=turn=='X'?'O':'X';
         space_left--;
     }
 }
@@ -41,15 +40,33 @@ void display(char combination[9])
     cout<<endl<<endl;
 }
 
+char random_turn()
+{
+    srand(time(NULL)); // srand function ensures that we get rand number every time
+
+    //int n = rand(); //Gives us any random number for example 6895742
+    //cout<<n<<endl;
+    //cout<<n%2<<endl; //by doing n%2 we could get reminder of 1 or 0
+
+    if(rand()%2)
+    {
+        return 'X';
+    }
+    return 'O';
+}
+
 int main()
 {
-    char combination[9]= {'1','2','3','4','5','6','7','8','9'}, turn = 'X';
+    char combination[9]= {'1','2','3','4','5','6','7','8','9'}, turn;
     int space_left = 9, position;
+
+    turn=random_turn();
 
     while(space_left!=0)
     {
-
         display(combination);
+
+        //!winner(combination,turn)&&get_position(position,turn);
 
         if(winner(combination,turn))
         {
@@ -58,10 +75,9 @@ int main()
         }
         else
         {
-
+            turn=turn=='X'?'O':'X';
             cout<<"Enter position for "<<turn<<endl;
-            cin>>position;
-
+    cin>>position;
 
             if (position > 0 && position <= 9 && combination[position-1] != 'X' && combination[position-1] != 'O')
             {
@@ -74,9 +90,12 @@ int main()
             }
         }
     }
-    if(space_left==0)
+    if(space_left==0 && !winner(combination,turn))
     {
         cout<<"DRAW"<<endl;
+    }else if(space_left==0 && winner(combination,turn)) // for special case winning for example position sequence=(1,2,3,5,4,6,8,9,7)
+    {
+        cout<<"WINNER IS "<<turn<<endl;
     }
     return 0;
 }
